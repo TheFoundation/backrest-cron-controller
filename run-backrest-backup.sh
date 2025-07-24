@@ -228,10 +228,10 @@ echo "${MYPID}" > /tmp/backrest_stats_sending_$DOMAIN_$PLAN
         status_state=$( get_json_status_by_plan "$DOMAIN" "$AUTH" "$PLAN" |grep -e STATUS_SUCCESS -e STATUS_ERROR -e INPROGRESS|grep  '"planId":"'"$PLAN" )
         #echo "RAWSTATE:" 
         #echo "$status_state"
-        echo "FILTERD_STATE"
-        echo "$status_state"|grep "operationBackup"|grep -e STATUS_SUCCESS -e STATUS_ERROR |grep  '"flowId":"'"${FLOW_ID}"
+        #echo "FILTERD_STATE"
+        #echo "$status_state"|grep "operationBackup"|grep -e STATUS_SUCCESS -e STATUS_ERROR |grep  '"flowId":"'"${FLOW_ID}"
           echo "$status_state"|grep "operationBackup"|grep -e STATUS_SUCCESS -e STATUS_ERROR |grep  -q '"flowId":"'"${FLOW_ID}"  && {
-          echo "BACKUP FINISHED"
+          log "BACKUP FINISHED"
           echo "$status_state"|grep "operationBackup"|grep   '"flowId":"'"${FLOW_ID}"|grep -q -e STATUS_SUCCESS || echo "98%" 
           echo "$status_state"|grep "operationBackup"|grep   '"flowId":"'"${FLOW_ID}"|grep -q -e STATUS_SUCCESS  && {
           final_res=$(echo "$status_state"|grep "operationBackup"|grep -e STATUS_SUCCESS |grep  '"flowId":"'"${FLOW_ID}")
