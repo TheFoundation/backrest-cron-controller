@@ -296,10 +296,10 @@ echo "97%"
 echo "$myres"|grep FAIL -q ||  { 
     # successful backup, calculate repo stats
     
-    echo "triger stats generation"
+    echo "trigger stats generation"
     echo "98%"
     curl -kLs -X POST  -u "${AUTH}" "https://${DOMAIN}/v1.Backrest/DoRepoTask" --data '{"repoId": "s3-bob","task": "TASK_STATS"}' -H 'Content-Type: application/json'
-
+    echo
     }
 echo "$myres"|grep FAIL && exit 1
 echo 100%
