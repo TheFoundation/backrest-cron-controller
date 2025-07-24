@@ -238,14 +238,16 @@ echo "${MYPID}" > /tmp/backrest_stats_sending_$DOMAIN_$PLAN
         #echo "$status_state"|grep "operationBackup"|grep -e STATUS_SUCCESS -e STATUS_ERROR |grep  '"flowId":"'"${FLOW_ID}"
           echo "$status_state"|grep "operationBackup"|grep -e STATUS_SUCCESS -e STATUS_ERROR |grep  -q '"flowId":"'"${FLOW_ID}"  && {
           log "BACKUP FINISHED"
-          echo "$status_state"|grep "operationBackup"|grep   '"flowId":"'"${FLOW_ID}"|grep -q -e STATUS_SUCCESS || echo "98%" 
+          #echo "$status_state"|grep "operationBackup"|grep   '"flowId":"'"${FLOW_ID}"|grep -q -e STATUS_SUCCESS || 
+          echo "98%" 
           echo "$status_state"|grep "operationBackup"|grep   '"flowId":"'"${FLOW_ID}"|grep -q -e STATUS_SUCCESS  && {
           final_res=$(echo "$status_state"|grep "operationBackup"|grep -e STATUS_SUCCESS |grep  '"flowId":"'"${FLOW_ID}")
-          echo "$final_res"|jq .
+          #echo "$final_res"|jq .
           restic_stats=$(echo "$final_res"|jq .operationBackup.lastStatus.summary)
           mystamp=$(timestamp_nanos)
           STATS_DURA=$(echo "$restic_stats"|jq .totalDuration )
           SNAP_ID=$(echo "$restic_stats"   |jq -r .snapshotId )
+          log DURATION $STATS_DURA SNAPID $SNAP_ID
           echo "$restic_stats" |jq .
           [[ "${SNAP_ID}" = "null" ]] && SNAP_ID=
           [[ -z "${SNAP_ID}" ]] && { 
