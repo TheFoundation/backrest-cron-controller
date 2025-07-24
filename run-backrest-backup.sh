@@ -1,5 +1,13 @@
 #!/bin/bash
 
+which apk &>/dev/null && { 
+
+which jq     &>/dev/null || apk add jq
+which curl   &>/dev/null || apk add curl
+which restic &>/dev/null || apk add restic
+which ionice &>/dev/null || apk add ionice
+}
+
 which curl &>/dev/null || echo "NO CURL"
 which curl &>/dev/null || exit 1
 which jq   &>/dev/null || echo "NO JQ"

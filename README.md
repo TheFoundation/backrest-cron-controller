@@ -15,14 +15,16 @@ backrest API cron job cronfroller that
 
 ## Installation and Usage
  * install the thingy by running git clone or mount it into e.g. a cronicle docker container
- * run it after setting the variables via export, example:
+ * run it after setting the variables via export, example for cronicle shell plugin:
    ```
+   which git &>/dev/null || apk add git
+   git clone https://github.com/TheFoundation/backrest-cron-controller.git /opt/backrest-cron-controller
    export AUTH="backrest_username:backrest_pass" 
    export DOMAIN=backrest-ssl.domain.lan
    export PLAN=daily-backup
    export INFLUX_TOKEN=A5Da5df00f00b49b49A5Da5df00b49==
    export INFLUX_URL="https://westeurope-over-9000.outage365-azure.cloud2.influxdata.com/api/v2/write?org=f33db33f&bucket=BACKUPRESTIC&precision=ns"
-   /bin/bash /path/to/git/run-backrest-backup.sh || exit 1
+   /bin/bash /opt/backrest-cron-controller/run-backrest-backup.sh || exit 1
     ```
 
 ## backrest API Examples 
