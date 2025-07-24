@@ -229,7 +229,7 @@ echo "${MYPID}" > /tmp/backrest_stats_sending_$DOMAIN_$PLAN
         echo "RAWSTATE:" 
         echo "$status_state"
         echo "FILTERD_STATE"
-        echo "$status_state"|grep "operationBackup"|grep -e STATUS_SUCCESS -e STATUS_ERROR |grep  -q '"flowId":"'"${FLOW_ID}"
+        echo "$status_state"|grep "operationBackup"|grep -e STATUS_SUCCESS -e STATUS_ERROR |grep  '"flowId":"'"${FLOW_ID}"
           echo "$status_state"|grep "operationBackup"|grep -e STATUS_SUCCESS -e STATUS_ERROR |grep  -q '"flowId":"'"${FLOW_ID}"  && {
           echo "$status_state"|grep "operationBackup"|grep  -q '"flowId":"'"${FLOW_ID}"|grep -e STATUS_SUCCESS || echo "100%" 
           echo "$status_state"|grep "operationBackup"|grep  -q '"flowId":"'"${FLOW_ID}"|grep -e STATUS_SUCCESS  && {
