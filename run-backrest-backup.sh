@@ -222,9 +222,13 @@ echo "${MYPID}" > /tmp/backrest_stats_sending_$DOMAIN_$PLAN
     echo "$status_state"| grep -e INPROGRESS|grep operationBackup | grep  '"planId":"'"$PLAN" -q || rm /tmp/backrest_stats_sending_$DOMAIN_$PLAN
     ## at the end of a backup
     [[ ${FLOW_ID} = 0 ]] || test -e /tmp/backrest_stats_sending_$DOMAIN_$PLAN || { 
+        echo "97%"
 		log   will send FINAL_STATS in 30s "(from UTC: "$(date -u )")"
         sleep 30
         status_state=$( get_json_status_by_plan "$DOMAIN" "$AUTH" "$PLAN" |grep -e STATUS_SUCCESS -e STATUS_ERROR -e INPROGRESS|grep  '"planId":"'"$PLAN" )
+        echo "RAWSTATE:" 
+        echo "$status_state"
+        echo "FILTERD_STATE"
         echo "$status_state"|grep "operationBackup"|grep -e STATUS_SUCCESS -e STATUS_ERROR |grep  -q '"flowId":"'"${FLOW_ID}"
           echo "$status_state"|grep "operationBackup"|grep -e STATUS_SUCCESS -e STATUS_ERROR |grep  -q '"flowId":"'"${FLOW_ID}"  && {
           echo "$status_state"|grep "operationBackup"|grep  -q '"flowId":"'"${FLOW_ID}"|grep -e STATUS_SUCCESS || echo "100%" 
