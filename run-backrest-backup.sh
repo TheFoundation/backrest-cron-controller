@@ -141,6 +141,7 @@ current_state=$(get_json_status_all "$DOMAIN" "$AUTH" "$PLAN" )
 (echo "$current_state"|grep INPROGRESS | grep -q  '"planId":"'"$PLAN" |wc -l) |grep -q "^0$" && INSTANCE_READY=true
 sleep 5
 done
+current_state=$(get_json_status_all "$DOMAIN" "$AUTH" "$PLAN" )
 echo "$current_state"|grep INPROGRESS  | grep -q  '"planId":"'"$PLAN" && FLOW_ID=$(echo "$current_state"|grep INPROGRESS  |grep  '"planId":"'"$PLAN" |jq -r .flowId )
 [[ -z ${FLOW_ID} ]] && FLOW_ID=0
 [[ -z ${FLOW_ID} ]] || ( [[ ${FLOW_ID} = 0 ]] || echo "FLOW_ID:"$FLOW_ID )
