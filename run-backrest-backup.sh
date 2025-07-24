@@ -69,7 +69,6 @@ echo "$current_state"|grep INPROGRESS |wc -l |grep -q "^0$" && INSTANCE_READY=tr
 (echo "$current_state"|grep INPROGRESS -q ) && (echo "$current_state"|grep INPROGRESS  |grep -q  '"planId":"'"$PLAN")  && { INSTANCE_READY=true; STATS_ONLY=true ; }
 
 echo "$current_state"|grep INPROGRESS  | grep -q  '"planId":"'"$PLAN" && FLOW_ID=$(echo "$current_state"|grep INPROGRESS  |grep  '"planId":"'"$PLAN" |jq -r .flowId )
-
 [[ -z ${FLOW_ID} ]] && FLOW_ID=0
 [[ -z ${FLOW_ID} ]] || ( [[ ${FLOW_ID} = 0 ]] || echo "FLOW_ID:"$FLOW_ID )
 
@@ -143,6 +142,9 @@ current_state=$(get_json_status_all "$DOMAIN" "$AUTH" "$PLAN" )
 sleep 5
 done
 log BACKUP_RUNNING
+echo "$current_state"|grep INPROGRESS  | grep -q  '"planId":"'"$PLAN" && FLOW_ID=$(echo "$current_state"|grep INPROGRESS  |grep  '"planId":"'"$PLAN" |jq -r .flowId )
+[[ -z ${FLOW_ID} ]] && FLOW_ID=0
+[[ -z ${FLOW_ID} ]] || ( [[ ${FLOW_ID} = 0 ]] || echo "FLOW_ID:"$FLOW_ID )
 sleep 1
 
 current_state=$(get_json_status_all "$DOMAIN" "$AUTH" "$PLAN" )
@@ -268,6 +270,7 @@ echo "${MYPID}" > /tmp/backrest_stats_sending_$DOMAIN_$PLAN
 wait
 
 ## end part
+[[ ${FLOW_ID} = 0 ]] && ( (echo $( cat /tmp/backrest_cur_flow_$DOMAIN_$PLAN; echo FLOW_ID_NOT_FOUND ) ) >  /tmp/backrest_cur_flow_$DOMAIN_$PLAN )
 test -e /tmp/backrest_cur_flow_$DOMAIN_$PLAN && rm  /tmp/backrest_cur_flow_$DOMAIN_$PLAN
 myres=$(cat /tmp/backrest_status_$DOMAIN_$PLAN_$MYPID)
 rm /tmp/backrest_status_$DOMAIN_$PLAN_$MYPID
