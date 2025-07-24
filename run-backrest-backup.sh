@@ -55,6 +55,12 @@ function send_influx_data() {
   [[ -z ${INFLUX_AUTH}  ]] || curl -s -XPOST -u "${INFLUX_AUTH}" "${INFLUX_URL}" --data-binary @- 
   }
 }
+## send initial influx data
+(echo "restic_backup_percent,host=$DOMAIN,repo=$PLAN value=0 $mystamp"
+ echo "restic_backup_filesDone,host=$DOMAIN,repo=$PLAN value=0 $mystamp"
+ echo "restic_backup_bytesDone,host=$DOMAIN,repo=$PLAN value=0 $mystamp"
+)  |grep -v ^$| send_influx_data || (log  "FAILED SENDING INFLUX";log "$influx_output") & 
+
 
 FLOW_ID=0
 current_state=$(get_json_status_all "$DOMAIN" "$AUTH" "$PLAN" )
@@ -159,7 +165,7 @@ echo "3%"
 [[ ${FLOW_ID} = 0 ]] || { [[ -z ${FLOW_ID} ]]  && ( echo "${FLOW_ID}" > /tmp/backrest_cur_flow_$DOMAIN_$PLAN ) } 
 
 ## send initial influx data
-(echo "restic_backup_percent,host=$DOMAIN,repo=$PLAN value=100 $mystamp"
+(echo "restic_backup_percent,host=$DOMAIN,repo=$PLAN value=1 $mystamp"
  echo "restic_backup_filesDone,host=$DOMAIN,repo=$PLAN value=0 $mystamp"
  echo "restic_backup_bytesDone,host=$DOMAIN,repo=$PLAN value=0 $mystamp"
 )  |grep -v ^$| send_influx_data || (log  "FAILED SENDING INFLUX";log "$influx_output") & 
