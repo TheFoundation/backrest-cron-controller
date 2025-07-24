@@ -225,6 +225,7 @@ echo "${MYPID}" > /tmp/backrest_stats_sending_$DOMAIN_$PLAN
 		log   will send FINAL_STATS in 30s "(from UTC: "$(date -u )")"
         sleep 30
         status_state=$( get_json_status_by_plan "$DOMAIN" "$AUTH" "$PLAN" |grep -e STATUS_SUCCESS -e STATUS_ERROR -e INPROGRESS|grep  '"planId":"'"$PLAN" )
+        echo "$status_state"|grep "operationBackup"|grep -e STATUS_SUCCESS -e STATUS_ERROR |grep  -q '"flowId":"'"${FLOW_ID}"
           echo "$status_state"|grep "operationBackup"|grep -e STATUS_SUCCESS -e STATUS_ERROR |grep  -q '"flowId":"'"${FLOW_ID}"  && {
           echo "$status_state"|grep "operationBackup"|grep  -q '"flowId":"'"${FLOW_ID}"|grep -e STATUS_SUCCESS || echo "100%" 
           echo "$status_state"|grep "operationBackup"|grep  -q '"flowId":"'"${FLOW_ID}"|grep -e STATUS_SUCCESS  && {
