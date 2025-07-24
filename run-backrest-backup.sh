@@ -225,7 +225,7 @@ echo "${MYPID}" > /tmp/backrest_stats_sending_$DOMAIN_$PLAN
 		log  will send FINAL_STATS in 60s
         sleep 60
         status_state=$( get_json_status_by_plan "$DOMAIN" "$AUTH" "$PLAN" |grep -e STATUS_SUCCESS -e STATUS_ERROR -e INPROGRESS|grep  '"planId":"'"$PLAN" )
-        echo "$status_state"  |grep "operationBackup"|grep -e STATUS_SUCCESS -e STATUS_ERROR |grep  -q '"flowId":"'"${FLOW_ID}"  && {
+          echo "$status_state"|grep "operationBackup"|grep -e STATUS_SUCCESS -e STATUS_ERROR |grep  -q '"flowId":"'"${FLOW_ID}"  && {
           echo "$status_state"|grep "operationBackup"|grep  -q '"flowId":"'"${FLOW_ID}"|grep -e STATUS_SUCCESS || echo "100%" 
           echo "$status_state"|grep "operationBackup"|grep  -q '"flowId":"'"${FLOW_ID}"|grep -e STATUS_SUCCESS  && {
           final_res=$(echo "$status_state"|grep "operationBackup"|grep -e STATUS_SUCCESS |grep  '"flowId":"'"${FLOW_ID}")
@@ -233,10 +233,11 @@ echo "${MYPID}" > /tmp/backrest_stats_sending_$DOMAIN_$PLAN
           mystamp=$(timestamp_nanos)
           STATS_DURA=$(echo "$restic_stats"|jq .totalDuration )
           SNAP_ID=$(echo "$restic_stats"   |jq -r .snapshotId )
+          echo "$restic_stats" |jq .
           [[ "${SNAP_ID}" = "null" ]] && SNAP_ID=
           [[ -z "${SNAP_ID}" ]] && { 
               log BACKUP in $PLAN did not seem to finish
-              echo "BACKUP in $PLAN did not seem to finish"  > /tmp/backrest_status_$DOMAIN_$PLAN_$MYPID 
+              echo "FAIL: BACKUP in $PLAN did not seem to finish"  > /tmp/backrest_status_$DOMAIN_$PLAN_$MYPID 
           }
           [[ -z "${SNAP_ID}" ]] || { 
                       log BACKUP in $PLAN resulted in $SNAP_ID
