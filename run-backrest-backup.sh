@@ -270,7 +270,7 @@ echo "${MYPID}" > /tmp/backrest_stats_sending_$DOMAIN_$PLAN
 wait
 
 ## end part
-[[ ${FLOW_ID} = 0 ]] && ( (echo $( cat /tmp/backrest_cur_flow_$DOMAIN_$PLAN; echo FLOW_ID_NOT_FOUND ) ) >  /tmp/backrest_cur_flow_$DOMAIN_$PLAN )
+[[ ${FLOW_ID} = 0 ]] && ( (echo $( cat /tmp/backrest_cur_flow_$DOMAIN_$PLAN; echo FAIL_FLOW_ID_NOT_FOUND ) ) >  /tmp/backrest_cur_flow_$DOMAIN_$PLAN )
 test -e /tmp/backrest_cur_flow_$DOMAIN_$PLAN && rm  /tmp/backrest_cur_flow_$DOMAIN_$PLAN
 myres=$(cat /tmp/backrest_status_$DOMAIN_$PLAN_$MYPID)
 rm /tmp/backrest_status_$DOMAIN_$PLAN_$MYPID
