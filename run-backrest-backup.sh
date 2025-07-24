@@ -12,6 +12,10 @@ which curl &>/dev/null || exit 1
 which jq   &>/dev/null || echo "NO JQ"
 which jq   &>/dev/null || exit 1
 
+[[  -z "$HEALTHCHECKSIO" ]] || { 
+    echo "sending healthcheck start"
+    curl -s "$HEALTHCHECKSIO"
+}
 timestamp_nanos() { if [[ $(date -u +%s%N|grep ^[0-9] |wc -c) -eq 20  ]]; then date -u +%s%N;else expr $(date -u +%s) "*" 1000 "*" 1000 "*" 1000 ; fi ; } ;
 LOGGFILE=NONE
 function log() { 
@@ -301,6 +305,11 @@ echo "$myres"|grep FAIL -q ||  {
     curl -kLs -X POST  -u "${AUTH}" "https://${DOMAIN}/v1.Backrest/DoRepoTask" --data '{"repoId": "s3-bob","task": "TASK_STATS"}' -H 'Content-Type: application/json'
     echo
     }
+[[  -z "$HEALTHCHECKSIO" ]] || { 
+    echo "$myres"|grep FAIL && curl -s "$HEALTHCHECKSIO"/1
+    echo "$myres"|grep FAIL || curl -s "$HEALTHCHECKSIO"/0
+    
+}
 echo "$myres"|grep FAIL && exit 1
 echo 100%
 exit 0
