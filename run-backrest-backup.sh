@@ -248,7 +248,7 @@ echo "${MYPID}" > /tmp/backrest_stats_sending_$DOMAIN_$PLAN
           STATS_DURA=$(echo "$restic_stats"|jq .totalDuration )
           SNAP_ID=$(echo "$restic_stats"   |jq -r .snapshotId )
           log DURATION $STATS_DURA SNAPID $SNAP_ID
-          echo "$restic_stats" |jq .
+          #echo "$restic_stats" |jq .
           [[ "${SNAP_ID}" = "null" ]] && SNAP_ID=
           [[ -z "${SNAP_ID}" ]] && { 
               log BACKUP in $PLAN did not seem to finish
@@ -256,8 +256,8 @@ echo "${MYPID}" > /tmp/backrest_stats_sending_$DOMAIN_$PLAN
           }
           [[ -z "${SNAP_ID}" ]] || { 
                       log BACKUP in $PLAN resulted in $SNAP_ID
-                      [[ "${STATS_ONLY}" = "true" ]]  || ( echo "FAIL other backup of same plan was still running"  > /tmp/backrest_status_$DOMAIN_$PLAN_$MYPID )
-                      [[ "${STATS_ONLY}" = "false" ]] || ( echo "OK BACKUP OF $DOMAIN / $PLAN SUCCEEDED "  > /tmp/backrest_status_$DOMAIN_$PLAN_$MYPID )            
+                      [[ "${STATS_ONLY}" = "true" ]]  && ( echo "FAIL other backup of same plan was still running"  > /tmp/backrest_status_$DOMAIN_$PLAN_$MYPID )
+                      [[ "${STATS_ONLY}" = "false" ]] && ( echo "OK BACKUP OF $DOMAIN / $PLAN SUCCEEDED "  > /tmp/backrest_status_$DOMAIN_$PLAN_$MYPID )            
            }
 
           
