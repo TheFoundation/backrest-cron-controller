@@ -106,7 +106,10 @@ REPO_ID=$(echo "$current_state"|grep '"planId":"'"$PLAN"'"'|tail -n10|jq -r .rep
    for check_plan in $(( echo "$PLAN";echo "$current_state"|grep '"repoId":"'"${REPO_ID}"'"'|grep operationBackup|jq -r .planId  )|sort -u ) ; do 
       echo "$current_state"|grep '"repoId":"'"${REPO_ID}"'"'|grep operationBackup|grep '"planId":"'"${check_plan}"'"'|tail -n1|grep -q -e "task was interrupted" -e "STATUS_ERROR" -e "cancellation or instance shutdown" && ABORTED_FOUND=true
    done
-   [[ "ABORTED_FOUND" ]] && {
+   NO_BACKUP_RUNNING=true
+   (echo "$current_state"|grep INPROGRESS -q ) && (echo "$current_state"|grep INPROGRESS  |grep -q  '"planId":"'"$PLAN")  && NO_BACKUP_RUNNING=false
+
+   [[ "${NO_BACKUP_RUNNING}" = "true" ]] && [[ "$ABORTED_FOUND" = "true" ]] && {
        log running repair index in $REPO_ID .. unlocking:
        log curl -kLs -X POST  -u "${AUTH}" "https://${DOMAIN}/v1.Backrest/RunCommand" --data '{"repoId": "'"${REPO_ID}"'","command": "unlock"}' -H 'Content-Type: application/json'  
        curl -kLs -X POST  -u "${AUTH}" "https://${DOMAIN}/v1.Backrest/RunCommand" --data '{"repoId": "'"${REPO_ID}"'","command": "unlock"}' -H 'Content-Type: application/json' 
