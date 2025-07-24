@@ -59,11 +59,7 @@ function send_influx_data() {
   [[ -z ${INFLUX_AUTH}  ]] || curl -s -XPOST -u "${INFLUX_AUTH}" "${INFLUX_URL}" --data-binary @- 
   }
 }
-## send initial influx data
-(echo "restic_backup_percent,host=$DOMAIN,repo=$PLAN value=0 $mystamp"
- echo "restic_backup_filesDone,host=$DOMAIN,repo=$PLAN value=0 $mystamp"
- echo "restic_backup_bytesDone,host=$DOMAIN,repo=$PLAN value=0 $mystamp"
-)  |grep -v ^$| send_influx_data || (log  "FAILED SENDING INFLUX";log "$influx_output") & 
+
 
 
 FLOW_ID=0
@@ -75,8 +71,18 @@ INSTANCE_READY=false
 export STATS_ONLY=false
 echo "$current_state"|grep INPROGRESS |wc -l |grep -q "^0$" && INSTANCE_READY=true
 ## assume readiness if same plan is running
-(echo "$current_state"|grep INPROGRESS -q ) && (echo "$current_state"|grep INPROGRESS  |grep -q  '"planId":"'"$PLAN")  && log "BACKUP_RUNNING for curent plan"
+(echo "$current_state"|grep INPROGRESS -q ) && (echo "$current_state"|grep INPROGRESS  |grep -q  '"planId":"'"$PLAN")  && log "BACKUP_RUNNING for current plan"
 (echo "$current_state"|grep INPROGRESS -q ) && (echo "$current_state"|grep INPROGRESS  |grep -q  '"planId":"'"$PLAN")  && { INSTANCE_READY=true; STATS_ONLY=true ; }
+(echo "$current_state"|grep INPROGRESS -q ) && (echo "$current_state"|grep INPROGRESS  |grep -q  '"planId":"'"$PLAN")  || (
+  ## send initial influx data
+  (echo "restic_backup_percent,host=$DOMAIN,repo=$PLAN value=0 $mystamp"
+   echo "restic_backup_filesDone,host=$DOMAIN,repo=$PLAN value=0 $mystamp"
+   echo "restic_backup_bytesDone,host=$DOMAIN,repo=$PLAN value=0 $mystamp"
+  )  |grep -v ^$| send_influx_data || (log  "FAILED SENDING INFLUX";log "$influx_output") & 
+
+)
+
+
 
 echo "$current_state"|grep INPROGRESS  | grep -q  '"planId":"'"$PLAN" && FLOW_ID=$(echo "$current_state"|grep INPROGRESS  |grep  '"planId":"'"$PLAN" |jq -r .flowId )
 [[ -z ${FLOW_ID} ]] && FLOW_ID=0
@@ -168,11 +174,6 @@ echo "3%"
 	}
 [[ ${FLOW_ID} = 0 ]] || { [[ -z ${FLOW_ID} ]]  && ( echo "${FLOW_ID}" > /tmp/backrest_cur_flow_$DOMAIN_$PLAN ) } 
 
-## send initial influx data
-(echo "restic_backup_percent,host=$DOMAIN,repo=$PLAN value=1 $mystamp"
- echo "restic_backup_filesDone,host=$DOMAIN,repo=$PLAN value=0 $mystamp"
- echo "restic_backup_bytesDone,host=$DOMAIN,repo=$PLAN value=0 $mystamp"
-)  |grep -v ^$| send_influx_data || (log  "FAILED SENDING INFLUX";log "$influx_output") & 
 
 test -e /tmp/backrest_stats_sending_$DOMAIN_$PLAN || (
 echo "${MYPID}" > /tmp/backrest_stats_sending_$DOMAIN_$PLAN
