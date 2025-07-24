@@ -51,8 +51,8 @@ curl -kL -X POST  -s -u "$2" 'https://'"$1"'/v1.Backrest/GetOperations'  --data 
 function send_influx_data() { 
   #echo "sending influx " >&2
   [[ -z ${INFLUX_URL} ]] || {
-  [[ -z ${INFLUX_TOKEN} ]] || curl -XPOST --header "Authorization: Token ${INFLUX_TOKEN}" "${INFLUX_URL}" --data-binary @- 
-  [[ -z ${INFLUX_AUTH}  ]] || curl -XPOST -u "${INFLUX_AUTH}" "${INFLUX_URL}" --data-binary @- 
+  [[ -z ${INFLUX_TOKEN} ]] || curl -s -XPOST --header "Authorization: Token ${INFLUX_TOKEN}" "${INFLUX_URL}" --data-binary @- 
+  [[ -z ${INFLUX_AUTH}  ]] || curl -s -XPOST -u "${INFLUX_AUTH}" "${INFLUX_URL}" --data-binary @- 
   }
 }
 
@@ -275,9 +275,9 @@ echo "97%"
 echo "$myres"|grep FAIL -q ||  { 
     # successful backup, calculate repo stats
     
-    echo "getting stats"
+    echo "triger stats generation"
     echo "98%"
-    curl -kL -X POST  -u "${AUTH}" "https://${DOMAIN}/v1.Backrest/DoRepoTask" --data '{"repoId": "s3-bob","task": "TASK_STATS"}' -H 'Content-Type: application/json'
+    curl -kLs -X POST  -u "${AUTH}" "https://${DOMAIN}/v1.Backrest/DoRepoTask" --data '{"repoId": "s3-bob","task": "TASK_STATS"}' -H 'Content-Type: application/json'
 
     }
 echo "$myres"|grep FAIL && exit 1
