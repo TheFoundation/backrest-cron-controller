@@ -45,3 +45,7 @@ For anyone having a hard time since the backrest webpage does not show you how t
 #   TASK_INDEX_SNAPSHOTS TASK_CHECK  TASK_PRUNE     TASK_STATS     TASK_UNLOCK
 
 ```
+
+<h3>A project of the foundation</h3>
+<a href="https://the-foundation.gitlab.io/"><div><img src="https://hcxi2.2ix.ch/github/TheFoundation/backrest-cron-controller/README.md/logo.jpg" width="480" height="270"/></div></a>
+
