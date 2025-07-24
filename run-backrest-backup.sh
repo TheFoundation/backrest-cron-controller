@@ -1,7 +1,6 @@
 #!/bin/bash
-
+echo "0%"
 which apk &>/dev/null && { 
-
 which jq     &>/dev/null || apk add jq
 which curl   &>/dev/null || apk add curl
 which restic &>/dev/null || apk add restic
@@ -77,7 +76,7 @@ echo "$current_state"|grep INPROGRESS  | grep -q  '"planId":"'"$PLAN" && FLOW_ID
 #echo "$INSTANCE_READY"
 while [[ ${INSTANCE_READY}  = "false" ]] ;do 
    log waiting for instance tasks
-   echo "0%" 
+   echo "1%" 
    sleep 60
    current_state=$(get_json_status_all "$DOMAIN" "$AUTH" "$PLAN" )
    TEMP_READY=false
@@ -133,7 +132,7 @@ REPO_ID=$(echo "$current_state"|grep '"planId":"'"$PLAN"'"'|tail -n10|jq -r .rep
    curl -kL -X POST  -u "${AUTH}" "https://${DOMAIN}/v1.Backrest/Backup" --data '{"value":"'"${PLAN}"'"}' -H 'Content-Type: application/json' &>/tmp/backrest_output_backupStart_$DOMAIN_$PLAN  &
    INSTANCE_READY=false
    }
-echo "1%"
+echo "2%"
 
 while [[ ${INSTANCE_READY}  = "false" ]] ;do 
 current_state=$(get_json_status_all "$DOMAIN" "$AUTH" "$PLAN" )
@@ -146,7 +145,7 @@ sleep 1
 current_state=$(get_json_status_all "$DOMAIN" "$AUTH" "$PLAN" )
 #(echo "$current_state"|grep INPROGRESS -q ) || INSTANCE_READY=true
 
-echo "2%"
+echo "3%"
 [[ ${FLOW_ID} = 0 ]] || {
 	grep -q ^${FLOW_ID}$ /tmp/backrest_cur_flow_$DOMAIN_$PLAN  &>/dev/null ||  ( echo "${FLOW_ID}" > /tmp/backrest_cur_flow_$DOMAIN_$PLAN)
 	}
@@ -157,7 +156,6 @@ echo "2%"
  echo "restic_backup_filesDone,host=$DOMAIN,repo=$PLAN value=0 $mystamp"
  echo "restic_backup_bytesDone,host=$DOMAIN,repo=$PLAN value=0 $mystamp"
 )  |grep -v ^$| send_influx_data || (log  "FAILED SENDING INFLUX";log "$influx_output") & 
-
 
 test -e /tmp/backrest_stats_sending_$DOMAIN_$PLAN || (
 echo "${MYPID}" > /tmp/backrest_stats_sending_$DOMAIN_$PLAN

@@ -17,8 +17,10 @@ backrest API cron job cronfroller that
  * install the thingy by running git clone or mount it into e.g. a cronicle docker container
  * run it after setting the variables via export, example for cronicle shell plugin:
    ```
+   #/bin/sh
    which git &>/dev/null || apk add git
-   git clone https://github.com/TheFoundation/backrest-cron-controller.git /opt/backrest-cron-controller
+   test -e /opt/backrest-cron-controller &&  (cd /opt/backrest-cron-controller;git pull )
+   test -e /opt/backrest-cron-controller ||  git clone https://github.com/TheFoundation/backrest-cron-controller.git /opt/backrest-cron-controller
    export AUTH="backrest_username:backrest_pass" 
    export DOMAIN=backrest-ssl.domain.lan
    export PLAN=daily-backup
