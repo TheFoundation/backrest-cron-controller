@@ -262,7 +262,7 @@ echo "${MYPID}" > /tmp/backrest_stats_sending_$DOMAIN_$PLAN
          }
       }
     }
-    echo "$status_state"| grep -e INPROGRESS|grep operationBackup | grep  '"planId":"'"$PLAN" -q && sleep 20;
+    echo "$status_state"| grep -e INPROGRESS|grep  '"planId":"'"$PLAN"| grep operationBackup  -q && sleep 20;
     echo "$status_state"| grep -e INPROGRESS|grep  '"planId":"'"$PLAN"| grep operationBackup |grep lastStatus -q || sleep 5
     sleep 10
     done
