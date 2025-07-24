@@ -3,7 +3,7 @@ backrest API cron job cronfroller that sends statistics to influxdb, runs automa
 # backrest-cron-controller
 backrest API cron job cronfroller that 
   * sends statistics to influxdb, 
-  * runs automaitcautomatic index repairs
+  * runs automated "repair index" command on repository if previous cancelled or failed backups detected
   * writes status percentage to stdout to use it with cronicle
 
 ## Features
