@@ -144,8 +144,9 @@ done
 current_state=$(get_json_status_all "$DOMAIN" "$AUTH" "$PLAN" )
 echo "$current_state"|grep INPROGRESS  | grep -q  '"planId":"'"$PLAN" && FLOW_ID=$(echo "$current_state"|grep INPROGRESS  |grep  '"planId":"'"$PLAN" |jq -r .flowId )
 [[ -z ${FLOW_ID} ]] && FLOW_ID=0
-[[ -z ${FLOW_ID} ]] || ( [[ ${FLOW_ID} = 0 ]] || echo "FLOW_ID:"$FLOW_ID )
-log "BACKUP_RUNNING ( flowID: ${FLOW_ID} )"
+logtail=""
+[[ -z ${FLOW_ID} ]] || { [[ ${FLOW_ID} = 0 ]] || logtail="( FLOW_ID:"$FLOW_ID" )" ; }
+log "BACKUP_RUNNING $logtail "
 sleep 1
 
 current_state=$(get_json_status_all "$DOMAIN" "$AUTH" "$PLAN" )
