@@ -23,6 +23,7 @@ backrest API cron job cronfroller that
    test -e /opt/backrest-cron-controller ||  git clone https://github.com/TheFoundation/backrest-cron-controller.git /opt/backrest-cron-controller
    export AUTH="backrest_username:backrest_pass" 
    export DOMAIN=backrest-ssl.domain.lan
+   export HEALTHCHECKSIO=https://hc-ping.com/123-abc-321-cde
    export PLAN=daily-backup
    export INFLUX_TOKEN=A5Da5df00f00b49b49A5Da5df00b49==
    export INFLUX_URL="https://westeurope-over-9000.outage365-azure.cloud2.influxdata.com/api/v2/write?org=f33db33f&bucket=BACKUPRESTIC&precision=ns"
