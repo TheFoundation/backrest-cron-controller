@@ -224,7 +224,7 @@ echo "${MYPID}" > /tmp/backrest_stats_sending_$DOMAIN_$PLAN
          )
          
          #echo "$influx_output" 
-         echo "$influx_output" |grep -v ^$| send_influx_data || (log  "FAILED SENDING INFLUX";log "$influx_output") &
+         echo "$influx_output" |grep -v ^$| send_influx_data |grep error &&  (log  "FAILED SENDING INFLUX";log "$influx_output") &
          }
          [[ -z "${STATS_PERC}" ]] || (
             [[ "${FLOAT_PERC}" = "true" ]] || echo $( jq -n "100*$STATS_PERC" |cut -d. -f1)"%"
