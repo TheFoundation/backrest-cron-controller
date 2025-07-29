@@ -81,7 +81,7 @@ echo "$current_state"|grep INPROGRESS |wc -l |grep -q "^0$" && INSTANCE_READY=tr
   (echo "restic_backup_percent,host=$DOMAIN,repo=$PLAN value=0 $mystamp"
    echo "restic_backup_filesDone,host=$DOMAIN,repo=$PLAN value=0 $mystamp"
    echo "restic_backup_bytesDone,host=$DOMAIN,repo=$PLAN value=0 $mystamp"
-  )  |grep -v ^$| send_influx_data || (log  "FAILED SENDING INFLUX";log "$influx_output") & 
+  )  |grep -v ^$| send_influx_data |grep error &&  (log  "FAILED SENDING INFLUX";log "$influx_output") & 
 
 )
 
@@ -224,7 +224,7 @@ echo "${MYPID}" > /tmp/backrest_stats_sending_$DOMAIN_$PLAN
          )
          
          #echo "$influx_output" 
-         echo "$influx_output" |grep -v ^$| send_influx_data |grep error &&  (log  "FAILED SENDING INFLUX";log "$influx_output") &
+         echo "$influx_output" |sed 's/value=null/value=0/g' |grep -v ^$| send_influx_data |grep error &&  (log  "FAILED SENDING INFLUX";log "$influx_output") &
          }
          [[ -z "${STATS_PERC}" ]] || (
             [[ "${FLOAT_PERC}" = "true" ]] || echo $( jq -n "100*$STATS_PERC" |cut -d. -f1)"%"
