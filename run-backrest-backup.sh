@@ -318,14 +318,14 @@ wait
 test -e /tmp/backrest_cur_flow_$DOMAIN_$PLAN && rm  /tmp/backrest_cur_flow_$DOMAIN_$PLAN
 myres=$(cat /tmp/backrest_status_$DOMAIN_$PLAN_$MYPID)
 rm /tmp/backrest_status_$DOMAIN_$PLAN_$MYPID
-echo "96%"
+echo "94%"
 echo "$myres"|grep FAIL -q ||  { 
     # successful backup, calculate repo stats
     [[ -z "${REPO_ID}" ]] || {
     log "trigger stats generation"
     statstart=$(date +%s)
     curl -kLs -X POST  -u "${AUTH}" "https://${DOMAIN}/v1.Backrest/DoRepoTask" --data '{"repoId": "'"${REPO_ID}"'","task": "TASK_STATS"}' -H 'Content-Type: application/json' 
-    echo "97%" 
+    echo "95%" 
     log "wait for stats"
     STATS_RUNNING="false"
        while [[ ${STATS_RUNNING}  = "false" ]] ;do 
