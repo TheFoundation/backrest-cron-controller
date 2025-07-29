@@ -300,14 +300,14 @@ wait
 test -e /tmp/backrest_cur_flow_$DOMAIN_$PLAN && rm  /tmp/backrest_cur_flow_$DOMAIN_$PLAN
 myres=$(cat /tmp/backrest_status_$DOMAIN_$PLAN_$MYPID)
 rm /tmp/backrest_status_$DOMAIN_$PLAN_$MYPID
-echo "97%"
+echo "96%"
 echo "$myres"|grep FAIL -q ||  { 
     # successful backup, calculate repo stats
-    echo "98%"    
     log "trigger stats generation"
     [[ -z "${REPO_ID}" ]] || {
     curl -kLs -X POST  -u "${AUTH}" "https://${DOMAIN}/v1.Backrest/DoRepoTask" --data '{"repoId": "'"${REPO_ID}"'","task": "TASK_STATS"}' -H 'Content-Type: application/json' 
     }
+    echo "97%" 
     log "wait for stats"
     STATS_RUNNING="false"
        while [[ ${STATS_RUNNING}  = "false" ]] ;do 
@@ -316,6 +316,7 @@ echo "$myres"|grep FAIL -q ||  {
        done
     echo
 }
+echo "98%" 
 [[  -z "$HEALTHCHECKSIO" ]] || { 
     echo "$myres"|grep -q FAIL || { echo "sending healthchecks.io  ok" ;curl -s "$HEALTHCHECKSIO"/0 ; } ; 
     echo "$myres"|grep -q FAIL && { echo "sending healthchecks.io err" ;curl -s "$HEALTHCHECKSIO"/1 ; } ; 
