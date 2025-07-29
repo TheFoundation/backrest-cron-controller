@@ -58,6 +58,7 @@ function send_influx_data() {
 
 function send_restback_dashboard_to_influx() { 
   dashboard_summary=$(curl -kL -X POST  -s -u "$2" 'https://'"$1"'/v1.Backrest/GetSummaryDashboard' --data '{}' -H 'Content-Type: application/json')
+repo_statdata=$(
   echo "$dashboard_summary" |jq .repoSummaries[] -c |grep -v null |while read reposum;do 
 echo "$reposum"
      myrepo=$(echo "$reposum" |jq -r .id)
@@ -67,7 +68,10 @@ echo "$reposum"
      echo "restic_stats_bytes_added_avg,host=$DOMAIN,repo=${myrepo} value="$(echo "$reposum" |jq -r .bytesAddedAvg)" "$(timestamp_nanos)
      echo "restic_stats_bytes_scanned_30days,host=$DOMAIN,repo=${myrepo} value="$(echo "$reposum" |jq -r .bytesScannedLast30days)" "$(timestamp_nanos)
      echo "restic_stats_bytes_scanned_avg,host=$DOMAIN,repo=${myrepo} value="$(echo "$reposum" |jq -r .bytesScannedAvg)" "$(timestamp_nanos) ) | grep -v -e value=null -e "value= "
-done   | send_influx_data|grep error && log "failed sending restback dashboard to influx"
+done  
+)
+
+echo "$repo_statdata" | send_influx_data|grep error && ( log "failed sending restback dashboard to influx" ;echo "$repo_statdata" )
 }
 
 FLOW_ID=0
@@ -328,7 +332,7 @@ echo "$myres"|grep FAIL -q ||  {
        done
     [[ -z "${INFLUX_URL}" ]] || {      
       statsres=$( get_json_status_all "$DOMAIN" "$AUTH" "$PLAN"  )
-      echo "$statsres" | |jq -c .operations[]|grep operationStats |while read statline;do 
+      echo "$statsres" | jq -c .operations[]|grep operationStats |while read statline;do 
     #echo "$statline"
     echo "$statline"|grep -q "totalSize" && ( 
      ( 
