@@ -254,7 +254,7 @@ echo "${MYPID}" > /tmp/backrest_stats_sending_$DOMAIN_$PLAN
     ## at the end of a backup
     [[ ${FLOW_ID} = 0 ]] || test -e /tmp/backrest_stats_sending_$DOMAIN_$PLAN || { 
         echo "97%"
-		log   will send FINAL_STATS in 30s "(from UTC: "$(date -u )")"
+		log   will send FINISHED_BACKUP_STATS in 30s "(from UTC: "$(date -u )")"
         sleep 30
         status_state=$( get_json_status_by_plan "$DOMAIN" "$AUTH" "$PLAN" |grep -e STATUS_SUCCESS -e STATUS_ERROR -e INPROGRESS|grep  '"planId":"'"$PLAN" )
         #echo "RAWSTATE:" 
