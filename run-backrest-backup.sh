@@ -322,6 +322,7 @@ echo "$myres"|grep FAIL -q ||  {
     # successful backup, calculate repo stats
     [[ -z "${REPO_ID}" ]] || {
     log "trigger stats generation"
+    statstart=$(date +%s)
     curl -kLs -X POST  -u "${AUTH}" "https://${DOMAIN}/v1.Backrest/DoRepoTask" --data '{"repoId": "'"${REPO_ID}"'","task": "TASK_STATS"}' -H 'Content-Type: application/json' 
     echo "97%" 
     log "wait for stats"
@@ -330,6 +331,8 @@ echo "$myres"|grep FAIL -q ||  {
           get_json_status_all "$DOMAIN" "$AUTH" "$PLAN" |grep stats |grep '"repoId":"'"${REPO_ID}"'"'|grep -q INPROGRESS || STATS_RUNNING=true
           sleep 15
        done
+     statend=$(date +%s)
+     log "stats generated in "$(($statend $statstart))"s"
     [[ -z "${INFLUX_URL}" ]] || {      
       statsres=$( get_json_status_all "$DOMAIN" "$AUTH" "$PLAN"  )
       echo "$statsres" | jq -c .operations[]|grep operationStats |while read statline;do 
