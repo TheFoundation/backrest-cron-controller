@@ -63,12 +63,12 @@ repo_statdata=$(
   echo "$dashboard_summary" |jq .repoSummaries[] -c |grep -v null |while read reposum;do 
 #echo "$reposum"
      myrepo=$(echo "$reposum" |jq -r .id)
-   ( echo "restic_stats_backups_failed_30days,host=$DOMAIN,repo=${myrepo} value="$(echo "$reposum" |jq -r .backupsFailed30days)" "$(timestamp_nanos)
+   ( echo "restic_stats_backups_failed_30days,host=$DOMAIN,repo=${myrepo} value="$(echo "$reposum" |jq -r .backupsFailed30days || echo -n 0)" "$(timestamp_nanos)
      echo "restic_stats_backups_success_30days,host=$DOMAIN,repo=${myrepo} value="$(echo "$reposum" |jq -r .backupsSuccessLast30days)" "$(timestamp_nanos)
      echo "restic_stats_bytes_added_30days,host=$DOMAIN,repo=${myrepo} value="$(echo "$reposum" |jq -r .bytesAddedLast30days)" "$(timestamp_nanos)
      echo "restic_stats_bytes_added_avg,host=$DOMAIN,repo=${myrepo} value="$(echo "$reposum" |jq -r .bytesAddedAvg)" "$(timestamp_nanos)
      echo "restic_stats_bytes_scanned_30days,host=$DOMAIN,repo=${myrepo} value="$(echo "$reposum" |jq -r .bytesScannedLast30days)" "$(timestamp_nanos)
-     echo "restic_stats_bytes_scanned_avg,host=$DOMAIN,repo=${myrepo} value="$(echo "$reposum" |jq -r .bytesScannedAvg)" "$(timestamp_nanos) ) | grep -v -e value=null -e "value= "
+     echo "restic_stats_bytes_scanned_avg,host=$DOMAIN,repo=${myrepo} value="$(echo "$reposum" |jq -r .bytesScannedAvg)" "$(timestamp_nanos) ) | grep -v  -e "value= "|sed *s/value=null/
 done  
 )
 
