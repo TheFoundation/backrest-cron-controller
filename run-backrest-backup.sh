@@ -56,9 +56,22 @@ function send_influx_data() {
   }
 }
 
-
+function send_restback_dashboard_to_influx() { 
+  dashboard_summary=$(curl -kL -X POST  -s -u "$2" 'https://'"$1"'/v1.Backrest/GetSummaryDashboard' --data '{}' -H 'Content-Type: application/json')
+  echo "$dashboard_summary" |jq .repoSummaries[] -c |grep -v null |while read reposum;do 
+echo "$reposum"
+     myrepo=$(echo "$reposum" |jq -r .id)
+   ( echo "restic_stats_backups_failed_30days,host=$DOMAIN,repo=${myrepo} value="$(echo "$reposum" |jq -r .backupsFailed30days)" "$(timestamp_nanos)
+     echo "restic_stats_backups_success_30days,host=$DOMAIN,repo=${myrepo} value="$(echo "$reposum" |jq -r .backupsSuccessLast30days)" "$(timestamp_nanos)
+     echo "restic_stats_bytes_added_30days,host=$DOMAIN,repo=${myrepo} value="$(echo "$reposum" |jq -r .bytesAddedLast30days)" "$(timestamp_nanos)
+     echo "restic_stats_bytes_added_avg,host=$DOMAIN,repo=${myrepo} value="$(echo "$reposum" |jq -r .bytesAddedAvg)" "$(timestamp_nanos)
+     echo "restic_stats_bytes_scanned_30days,host=$DOMAIN,repo=${myrepo} value="$(echo "$reposum" |jq -r .bytesScannedLast30days)" "$(timestamp_nanos)
+     echo "restic_stats_bytes_scanned_avg,host=$DOMAIN,repo=${myrepo} value="$(echo "$reposum" |jq -r .bytesScannedAvg)" "$(timestamp_nanos) ) | grep -v -e value=null -e "value= "
+done   | send_influx_data|grep error && log "failed sending restback dashboard to influx"
+}
 
 FLOW_ID=0
+
 current_state=$(get_json_status_all "$DOMAIN" "$AUTH" "$PLAN" )
 inital_state="$current_state"
 #echo search '"planId":"'"$PLAN" 
@@ -85,7 +98,7 @@ echo "$current_state"|grep INPROGRESS |wc -l |grep -q "^0$" && INSTANCE_READY=tr
 
 )
 
-
+send_restback_dashboard_to_influx "$DOMAIN" "$AUTH"
 
 echo "$current_state"|grep INPROGRESS  | grep -q  '"planId":"'"$PLAN" && FLOW_ID=$(echo "$current_state"|grep INPROGRESS  |grep  '"planId":"'"$PLAN" |jq -r .flowId )
 [[ -z ${FLOW_ID} ]] && FLOW_ID=0
@@ -313,10 +326,29 @@ echo "$myres"|grep FAIL -q ||  {
           get_json_status_all "$DOMAIN" "$AUTH" "$PLAN" |grep stats |grep '"repoId":"'"${REPO_ID}"'"'|grep -q INPROGRESS || STATS_RUNNING=true
           sleep 15
        done
+    [[ -z "${INFLUX_URL}" ]] || {      
+      statsres=$( get_json_status_all "$DOMAIN" "$AUTH" "$PLAN"  )
+      echo "$statsres" | |jq -c .operations[]|grep operationStats |while read statline;do 
+    #echo "$statline"
+    echo "$statline"|grep -q "totalSize" && ( 
+     ( 
+     myrepo=$(echo "$statline" |jq -r .repoId)
+     myendtime=$(echo "$statline" |jq -r .unixTimeEndMs )
+        echo "restic_stats_total_size_bytes,host=$DOMAIN,repo=${myrepo} value="$(echo "$statline" |jq -r .operationStats.stats.totalSize)" ${myendtime}000001" 
+        echo "restic_stats_total_uncompressed_size_bytes,host=$DOMAIN,repo=${myrepo} value="$(echo "$statline" |jq -r .operationStats.stats.totalUncompressedSize)" ${myendtime}000001"  
+        echo "restic_stats_compression_ratio,host=$DOMAIN,repo=${myrepo} value="$(echo "$statline" |jq -r .operationStats.stats.compressionRatio)" ${myendtime}000001"  
+        echo "restic_stats_blob_count,host=$DOMAIN,repo=${myrepo} value="$(echo "$statline" |jq -r .operationStats.stats.totalBlobCount)" ${myendtime}000001"   
+        echo "restic_stats_snapshot_count,host=$DOMAIN,repo=${myrepo} value="$(echo "$statline" |jq -r .operationStats.stats.snapshotCount)" ${myendtime}000001"   )  | grep -v -e value=null -e "value= "
+     ) 
+    done | send_influx_data |grep error && echo "failed sending final restic_stats from backrest to influx"
+
+      echo -n ; } ; 
     echo
     }
 }
 echo "98%" 
+send_restback_dashboard_to_influx "$DOMAIN" "$AUTH"
+echo "99%" 
 [[  -z "$HEALTHCHECKSIO" ]] || { 
     echo "$myres"|grep -q FAIL || { echo "sending healthchecks.io  ok" ;curl -s "$HEALTHCHECKSIO"/0 ; } ; 
     echo "$myres"|grep -q FAIL && { echo "sending healthchecks.io err" ;curl -s "$HEALTHCHECKSIO"/1 ; } ; 
