@@ -304,10 +304,16 @@ echo "97%"
 echo "$myres"|grep FAIL -q ||  { 
     # successful backup, calculate repo stats
     echo "98%"    
-    echo "trigger stats generation"
+    log "trigger stats generation"
     [[ -z "${REPO_ID}" ]] || {
     curl -kLs -X POST  -u "${AUTH}" "https://${DOMAIN}/v1.Backrest/DoRepoTask" --data '{"repoId": "'"${REPO_ID}"'","task": "TASK_STATS"}' -H 'Content-Type: application/json' 
     }
+    log "wait for stats"
+    STATS_RUNNING="false"
+       while [[ ${STATS_RUNNING}  = "false" ]] ;do 
+          get_json_status_all "$DOMAIN" "$AUTH" "$PLAN" |grep stats |grep |grep '"repoId":"'"${REPO_ID}"'"'|grep -q INPROGRESS || STATS_RUNNING=true
+          sleep 15
+       done
     echo
 }
 [[  -z "$HEALTHCHECKSIO" ]] || { 
