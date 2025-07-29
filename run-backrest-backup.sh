@@ -308,7 +308,7 @@ echo "$myres"|grep FAIL -q ||  {
     echo "98%"
     curl -kLs -X POST  -u "${AUTH}" "https://${DOMAIN}/v1.Backrest/DoRepoTask" --data '{"repoId": "s3-bob","task": "TASK_STATS"}' -H 'Content-Type: application/json'
     echo
-    }
+}
 [[  -z "$HEALTHCHECKSIO" ]] || { 
     echo "$myres"|grep -q FAIL || { echo "sending healthchecks.io  ok" ;curl -s "$HEALTHCHECKSIO"/0 ; } ; 
     echo "$myres"|grep -q FAIL && { echo "sending healthchecks.io err" ;curl -s "$HEALTHCHECKSIO"/1 ; } ; 
