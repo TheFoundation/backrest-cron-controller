@@ -303,10 +303,9 @@ rm /tmp/backrest_status_$DOMAIN_$PLAN_$MYPID
 echo "96%"
 echo "$myres"|grep FAIL -q ||  { 
     # successful backup, calculate repo stats
-    log "trigger stats generation"
     [[ -z "${REPO_ID}" ]] || {
+    log "trigger stats generation"
     curl -kLs -X POST  -u "${AUTH}" "https://${DOMAIN}/v1.Backrest/DoRepoTask" --data '{"repoId": "'"${REPO_ID}"'","task": "TASK_STATS"}' -H 'Content-Type: application/json' 
-    }
     echo "97%" 
     log "wait for stats"
     STATS_RUNNING="false"
@@ -315,6 +314,7 @@ echo "$myres"|grep FAIL -q ||  {
           sleep 15
        done
     echo
+    }
 }
 echo "98%" 
 [[  -z "$HEALTHCHECKSIO" ]] || { 
