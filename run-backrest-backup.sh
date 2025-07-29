@@ -57,6 +57,7 @@ function send_influx_data() {
 }
 
 function send_restback_dashboard_to_influx() { 
+  log send_restback_dashboard_to_influx
   dashboard_summary=$(curl -kL -X POST  -s -u "$2" 'https://'"$1"'/v1.Backrest/GetSummaryDashboard' --data '{}' -H 'Content-Type: application/json')
 repo_statdata=$(
   echo "$dashboard_summary" |jq .repoSummaries[] -c |grep -v null |while read reposum;do 
