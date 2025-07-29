@@ -333,7 +333,7 @@ echo "$myres"|grep FAIL -q ||  {
           sleep 15
        done
      statend=$(date +%s)
-     log "restback stats generated in "$(($statend $statstart))"s"
+     log "restback stats generated in "$(($statend - $statstart))"s"
     [[ -z "${INFLUX_URL}" ]] || {      
       statsres=$( get_json_status_all "$DOMAIN" "$AUTH" "$PLAN"  )
       log "sending restback_repo_stats"
