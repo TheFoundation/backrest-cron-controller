@@ -12,10 +12,6 @@ which curl &>/dev/null || exit 1
 which jq   &>/dev/null || echo "NO JQ"
 which jq   &>/dev/null || exit 1
 
-[[  -z "$HEALTHCHECKSIO" ]] || { 
-    echo "sending healthcheck start"
-    curl -s "$HEALTHCHECKSIO"
-}
 timestamp_nanos() { if [[ $(date -u +%s%N|grep ^[0-9] |wc -c) -eq 20  ]]; then date -u +%s%N;else expr $(date -u +%s) "*" 1000 "*" 1000 "*" 1000 ; fi ; } ;
 LOGGFILE=NONE
 function log() { 
@@ -71,7 +67,14 @@ INSTANCE_READY=false
 export STATS_ONLY=false
 echo "$current_state"|grep INPROGRESS |wc -l |grep -q "^0$" && INSTANCE_READY=true
 ## assume readiness if same plan is running
-(echo "$current_state"|grep INPROGRESS -q ) && (echo "$current_state"|grep INPROGRESS  |grep -q  '"planId":"'"$PLAN")  && log "BACKUP_RUNNING for current plan"
+(echo "$current_state"|grep INPROGRESS -q ) && (echo "$current_state"|grep INPROGRESS  |grep -q  '"planId":"'"$PLAN")  && ( 
+    log "BACKUP_RUNNING for current plan" 
+    [[  -z "$HEALTHCHECKSIO" ]] || { 
+    log "sending healthcheck keepalive"
+    curl -s "$HEALTHCHECKSIO"
+    }
+
+    )
 (echo "$current_state"|grep INPROGRESS -q ) && (echo "$current_state"|grep INPROGRESS  |grep -q  '"planId":"'"$PLAN")  && { INSTANCE_READY=true; STATS_ONLY=true ; }
 (echo "$current_state"|grep INPROGRESS -q ) && (echo "$current_state"|grep INPROGRESS  |grep -q  '"planId":"'"$PLAN")  || (
   ## send initial influx data
