@@ -311,7 +311,7 @@ echo "$myres"|grep FAIL -q ||  {
     log "wait for stats"
     STATS_RUNNING="false"
        while [[ ${STATS_RUNNING}  = "false" ]] ;do 
-          get_json_status_all "$DOMAIN" "$AUTH" "$PLAN" |grep stats |grep |grep '"repoId":"'"${REPO_ID}"'"'|grep -q INPROGRESS || STATS_RUNNING=true
+          get_json_status_all "$DOMAIN" "$AUTH" "$PLAN" |grep stats |grep '"repoId":"'"${REPO_ID}"'"'|grep -q INPROGRESS || STATS_RUNNING=true
           sleep 15
        done
     echo
