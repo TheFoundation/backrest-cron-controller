@@ -68,7 +68,7 @@ repo_statdata=$(
      echo "restic_stats_bytes_added_30days,host=$DOMAIN,repo=${myrepo} value="$(echo "$reposum" |jq -r .bytesAddedLast30days)" "$(timestamp_nanos)
      echo "restic_stats_bytes_added_avg,host=$DOMAIN,repo=${myrepo} value="$(echo "$reposum" |jq -r .bytesAddedAvg)" "$(timestamp_nanos)
      echo "restic_stats_bytes_scanned_30days,host=$DOMAIN,repo=${myrepo} value="$(echo "$reposum" |jq -r .bytesScannedLast30days)" "$(timestamp_nanos)
-     echo "restic_stats_bytes_scanned_avg,host=$DOMAIN,repo=${myrepo} value="$(echo "$reposum" |jq -r .bytesScannedAvg)" "$(timestamp_nanos) ) | grep -v  -e "value= "|sed *s/value=null/
+     echo "restic_stats_bytes_scanned_avg,host=$DOMAIN,repo=${myrepo} value="$(echo "$reposum" |jq -r .bytesScannedAvg)" "$(timestamp_nanos) ) | grep -v  -e "value= " -e value=null
 done  
 )
 
