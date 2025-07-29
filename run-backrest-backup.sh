@@ -325,7 +325,7 @@ echo "$myres"|grep FAIL -q ||  {
     log "trigger stats generation"
     statstart=$(date +%s)
     curl -kLs -X POST  -u "${AUTH}" "https://${DOMAIN}/v1.Backrest/DoRepoTask" --data '{"repoId": "'"${REPO_ID}"'","task": "TASK_STATS"}' -H 'Content-Type: application/json' 
-    echo "95%" 
+    echo;echo "95%" 
     log "wait for stats"
     STATS_RUNNING="false"
        while [[ ${STATS_RUNNING}  = "false" ]] ;do 
