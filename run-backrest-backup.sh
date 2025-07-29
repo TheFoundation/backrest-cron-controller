@@ -280,7 +280,7 @@ echo "${MYPID}" > /tmp/backrest_stats_sending_$DOMAIN_$PLAN
                         echo "restic_backup_processed_size_bytes,host=$DOMAIN,repo=$PLAN,snapshot=$SNAP_ID value="$(echo "$restic_stats"|jq -r .totalBytesProcessed )" $mystamp"
                        )
                       [[ "${STATS_ONLY}" = "false" ]] || ( echo "OK BACKUP OF $DOMAIN / $PLAN SUCCEEDED WITH "$(echo "$restic_stats"|jq -r .filesNew ) " newFiles,"$(echo "$restic_stats"|jq -r .totalBytesProcessed ) " BYTES_DONE IN ${STATS_DURA} s"  > /tmp/backrest_status_$DOMAIN_$PLAN_$MYPID )            
-                     echo "$influx_output" |grep -v ^$| send_influx_data|| (log  "FAILED SENDING FINAL INFLUX";log "$influx_output")
+                     echo "$influx_output" |grep -v ^$| send_influx_data |grep "error" && (log  "FAILED SENDING FINAL INFLUX";log "$influx_output")
                    }
           
           
