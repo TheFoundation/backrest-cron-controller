@@ -338,7 +338,7 @@ echo "$myres"|grep FAIL -q ||  {
       statsres=$( get_json_status_all "$DOMAIN" "$AUTH" "$PLAN"  )
       log "sending restback_repo_stats"
       echo "$statsres" | jq -c .operations[]|grep operationStats |grep totalSize|tail -n 10 |while read statline;do 
-    #echo "$statline"
+    echo "$statline" >&2
     echo "$statline"|grep -q "totalSize" && ( 
      ( 
      myrepo=$(echo "$statline" |jq -r .repoId)
