@@ -310,8 +310,8 @@ echo "$myres"|grep FAIL -q ||  {
     echo
     }
 [[  -z "$HEALTHCHECKSIO" ]] || { 
-    echo "$myres"|grep FAIL && curl -s "$HEALTHCHECKSIO"/1
-    echo "$myres"|grep FAIL || curl -s "$HEALTHCHECKSIO"/0
+    echo "$myres"|grep -q FAIL || { echo "sending healthchecks.io  ok" ;curl -s "$HEALTHCHECKSIO"/0 ; } ; 
+    echo "$myres"|grep -q FAIL && { echo "sending healthchecks.io err" ;curl -s "$HEALTHCHECKSIO"/1 ; } ; 
     
 }
 echo "$myres"|grep FAIL && exit 1
