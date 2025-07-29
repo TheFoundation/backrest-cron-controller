@@ -60,7 +60,7 @@ function send_restback_dashboard_to_influx() {
   dashboard_summary=$(curl -kL -X POST  -s -u "$2" 'https://'"$1"'/v1.Backrest/GetSummaryDashboard' --data '{}' -H 'Content-Type: application/json')
 repo_statdata=$(
   echo "$dashboard_summary" |jq .repoSummaries[] -c |grep -v null |while read reposum;do 
-echo "$reposum"
+#echo "$reposum"
      myrepo=$(echo "$reposum" |jq -r .id)
    ( echo "restic_stats_backups_failed_30days,host=$DOMAIN,repo=${myrepo} value="$(echo "$reposum" |jq -r .backupsFailed30days)" "$(timestamp_nanos)
      echo "restic_stats_backups_success_30days,host=$DOMAIN,repo=${myrepo} value="$(echo "$reposum" |jq -r .backupsSuccessLast30days)" "$(timestamp_nanos)
