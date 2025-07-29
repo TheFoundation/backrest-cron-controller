@@ -20,7 +20,7 @@ function log() {
 	}
 MYPID=$$
 [[ -z "${INFLUX_URL}" ]] && echo "Not sending to influx"
-echo "FAIL" > /tmp/backrest_status_$DOMAIN_$PLAN_$MYPID
+echo "STARTING" > /tmp/backrest_status_$DOMAIN_$PLAN_$MYPID
 
  test -e /tmp/backrest_stats_sending_$DOMAIN_$PLAN && ( grep -q "${MYPID}" /tmp/backrest_stats_sending_$DOMAIN_$PLAN  ||  { 
 	 
@@ -52,7 +52,7 @@ function send_influx_data() {
   #echo "sending influx " >&2
   [[ -z ${INFLUX_URL} ]] || {
   [[ -z ${INFLUX_TOKEN} ]] || curl -s -XPOST --header "Authorization: Token ${INFLUX_TOKEN}" "${INFLUX_URL}" --data-binary @- 
-  [[ -z ${INFLUX_AUTH}  ]] || curl -s -XPOST -u "${INFLUX_AUTH}" "${INFLUX_URL}" --data-binary @- 
+  [[ -z ${INFLUX_AUTH}  ]] || curl -s -XPOST                             -u "${INFLUX_AUTH}" "${INFLUX_URL}" --data-binary @- 
   }
 }
 
