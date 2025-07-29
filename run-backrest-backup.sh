@@ -289,7 +289,7 @@ echo "${MYPID}" > /tmp/backrest_stats_sending_$DOMAIN_$PLAN
           
           [[ -z "${STATS_DURA}" ]] || { 
                     influx_output=$(
-                        [[ -z "${SNAP_ID}" ]] || echo "restic_backup_percent,host=$DOMAIN,repo=$PLAN value=100 $mystamp"
+                        [[ -z "${SNAP_ID}" ]] || echo "restic_backup_percent,host=$DOMAIN,repo=$PLAN value=1 $mystamp"
                         echo "restic_backup_duration_seconds,host=$DOMAIN,repo=$PLAN,snapshot=$SNAP_ID value=${STATS_DURA} $mystamp"
                         echo "restic_backup_added_to_repo,host=$DOMAIN,repo=$PLAN,snapshot=$SNAP_ID value="$(echo "$restic_stats"|jq -r .dataAdded )" $mystamp"
                         echo "restic_backup_dirs_new,host=$DOMAIN,repo=$PLAN,snapshot=$SNAP_ID value="$(echo "$restic_stats"|jq -r .dirsNew )" $mystamp"
