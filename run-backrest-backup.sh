@@ -18,8 +18,15 @@ function log() {
 	[[ "$LOGGFILE" = "NONE" ]] && ( echo "$@" )
 	[[ "$LOGGFILE" = "NONE" ]] || ( echo "$@" |tee "$log_file" &>/dev/null)
 	}
-MYPID=$$
+[[ -z "${REPOID}" ]] && echo "your did not set REPOID"
+[[ -z "${REPOID}" ]] && exit 1
+[[ -z "${DOMAIN}" ]] && echo "your did not set DOMAIN"
+[[ -z "${DOMAIN}" ]] && exit 1
+[[ -z "${AUTH}" ]] && echo "your did not set AUTH"
+[[ -z "${AUTH}" ]] && exit 1
 [[ -z "${INFLUX_URL}" ]] && echo "Not sending to influx"
+MYPID=$$
+
 echo "STARTING" > /tmp/backrest_status_$DOMAIN_$PLAN_$MYPID
 
  test -e /tmp/backrest_stats_sending_$DOMAIN_$PLAN && ( grep -q "${MYPID}" /tmp/backrest_stats_sending_$DOMAIN_$PLAN  ||  { 
@@ -159,7 +166,7 @@ REPO_ID=$(echo "$current_state"|grep '"planId":"'"$PLAN"'"'|tail -n10|jq -r .rep
        echo 2%
        while [[ ${TEMP_READY}  = "false" ]] ;do 
           get_json_status_all "$DOMAIN" "$AUTH" "$PLAN" |grep -q INPROGRESS || TEMP_READY=true
-          sleep 15
+          [[ ${TEMP_READY}  = "false" ]] && sleep 15
        done
        }
        echo 3%
@@ -332,7 +339,7 @@ echo "$myres"|grep FAIL -q ||  {
     STATS_RUNNING="false"
        while [[ ${STATS_RUNNING}  = "false" ]] ;do 
           get_json_status_all "$DOMAIN" "$AUTH" "$PLAN" |grep stats |grep '"repoId":"'"${REPO_ID}"'"'|grep -q INPROGRESS || STATS_RUNNING=true
-          sleep 15
+          [[ ${STATS_RUNNING}  = "false" ]] && sleep 15
        done
      statend=$(date +%s)
      log "restback stats generated in "$(($statend - $statstart))"s"
