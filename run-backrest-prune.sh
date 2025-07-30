@@ -138,7 +138,8 @@ current_state=$(get_json_status_all "$DOMAIN" "$AUTH" "$REPOID" )
           #echo "$current_state"  | grep '"repoId":"'"$REPOID" 
           echo "$current_state"|grep INPROGRESS |grep operationPrune  | grep -q  '"repoId":"'"$REPOID" && FLOW_ID=$(echo "$current_state"|grep INPROGRESS  |grep operationPrune |grep  '"repoId":"'"$REPOID" |jq -r .flowId )
           [[ -z ${FLOW_ID} ]] && FLOW_ID=0
-          [[ -z ${FLOW_ID} ]] || ( [[ ${FLOW_ID} = 0 ]] || ( echo "FLOW_ID:"$FLOW_ID
+          [[ -z ${FLOW_ID} ]] || ( [[ ${FLOW_ID} = 0 ]] || ( 
+            #echo "FLOW_ID:"$FLOW_ID
                      grep -q ^${FLOW_ID}$ /tmp/backrest_cur_flow_$DOMAIN_$PLAN  &>/dev/null ||  ( echo "${FLOW_ID}" > /tmp/backrest_cur_flow_$DOMAIN_$PLAN)
             )
            )
