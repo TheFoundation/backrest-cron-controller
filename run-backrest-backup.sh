@@ -18,11 +18,11 @@ function log() {
 	[[ "$LOGGFILE" = "NONE" ]] && ( echo "$@" )
 	[[ "$LOGGFILE" = "NONE" ]] || ( echo "$@" |tee "$log_file" &>/dev/null)
 	}
-[[ -z "${REPOID}" ]] && echo "your did not set REPOID"
-[[ -z "${REPOID}" ]] && exit 1
-[[ -z "${DOMAIN}" ]] && echo "your did not set DOMAIN"
+[[ -z "${PLAN}" ]] && echo "you did not set PLAN"
+[[ -z "${PLAN}" ]] && exit 1
+[[ -z "${DOMAIN}" ]] && echo "you did not set DOMAIN"
 [[ -z "${DOMAIN}" ]] && exit 1
-[[ -z "${AUTH}" ]] && echo "your did not set AUTH"
+[[ -z "${AUTH}" ]] && echo "you did not set AUTH"
 [[ -z "${AUTH}" ]] && exit 1
 [[ -z "${INFLUX_URL}" ]] && echo "Not sending to influx"
 MYPID=$$
