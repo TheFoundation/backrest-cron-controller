@@ -153,9 +153,9 @@ current_state=$(get_json_status_all "$DOMAIN" "$AUTH" "$REPOID" )
 echo 90%
 ## end part
 FLOW_ID=$(cat /tmp/backrest_cur_flow_$DOMAIN_$PLAN)
-[[ -z "$FLOW_ID}" ]] && FLOW_ID=0
+[[ -z "${FLOW_ID}" ]] && FLOW_ID=0
 [[ -z ${FLOW_ID} ]] || ( [[ ${FLOW_ID} = 0 ]] || ( 
-        echo "FLOW_ID:"$FLOW_ID )
+        echo "FLOW_ID:"$FLOW_ID ) )
 [[ ${FLOW_ID} = 0 ]] && ( (echo $( cat /tmp/backrest_purge_flow_$DOMAIN_$REPOID; echo FAIL_FLOW_ID_NOT_FOUND ) ) >  /tmp/backrest_purge_flow_$DOMAIN_$REPOID )
 test -e /tmp/backrest_purge_flow_$DOMAIN_$REPOID && rm  /tmp/backrest_purge_flow_$DOMAIN_$REPOID
 myres=$(cat /tmp/backrest_prune_status_$DOMAIN_$REPOID_$MYPID)
