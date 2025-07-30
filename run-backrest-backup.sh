@@ -144,7 +144,7 @@ REPO_ID=$(echo "$current_state"|grep '"planId":"'"$PLAN"'"'|tail -n10|jq -r .rep
    done
    NO_BACKUP_RUNNING=true
    (echo "$current_state"|grep INPROGRESS -q ) && (echo "$current_state"|grep INPROGRESS  |grep -q  '"planId":"'"$PLAN")  && NO_BACKUP_RUNNING=false
-
+   echo "1%"
    [[ "${NO_BACKUP_RUNNING}" = "true" ]] && [[ "$ABORTED_FOUND" = "true" ]] && {
        log running repair index in $REPO_ID .. unlocking:
        #log curl -kLs -X POST  -u "${AUTH}" "https://${DOMAIN}/v1.Backrest/RunCommand" --data '{"repoId": "'"${REPO_ID}"'","command": "unlock"}' -H 'Content-Type: application/json'  
@@ -156,13 +156,15 @@ REPO_ID=$(echo "$current_state"|grep '"planId":"'"$PLAN"'"'|tail -n10|jq -r .rep
        sleep 5
        TEMP_READY=false
        echo "waiting for index repair"
+       echo 2%
        while [[ ${TEMP_READY}  = "false" ]] ;do 
           get_json_status_all "$DOMAIN" "$AUTH" "$PLAN" |grep -q INPROGRESS || TEMP_READY=true
           sleep 15
        done
        }
+       echo 3%
    }
- 
+echo 4%
 [[ ${STATS_ONLY}  = "false" ]] && {
    #(echo "$current_state"|grep INPROGRESS -q ) && (echo "$current_state"|grep INPROGRESS  |grep -q  '"planId":"'"$PLAN")  && exit 1
    
@@ -171,7 +173,7 @@ REPO_ID=$(echo "$current_state"|grep '"planId":"'"$PLAN"'"'|tail -n10|jq -r .rep
    curl -kL -X POST  -u "${AUTH}" "https://${DOMAIN}/v1.Backrest/Backup" --data '{"value":"'"${PLAN}"'"}' -H 'Content-Type: application/json' &>/tmp/backrest_output_backupStart_$DOMAIN_$PLAN  &
    INSTANCE_READY=false
    }
-echo "2%"
+echo "5%"
 
 while [[ ${INSTANCE_READY}  = "false" ]] ;do 
 current_state=$(get_json_status_all "$DOMAIN" "$AUTH" "$PLAN" )
@@ -189,7 +191,7 @@ sleep 1
 current_state=$(get_json_status_all "$DOMAIN" "$AUTH" "$PLAN" )
 #(echo "$current_state"|grep INPROGRESS -q ) || INSTANCE_READY=true
 
-echo "3%"
+echo "6%"
 [[ ${FLOW_ID} = 0 ]] || {
 	grep -q ^${FLOW_ID}$ /tmp/backrest_cur_flow_$DOMAIN_$PLAN  &>/dev/null ||  ( echo "${FLOW_ID}" > /tmp/backrest_cur_flow_$DOMAIN_$PLAN)
 	}
