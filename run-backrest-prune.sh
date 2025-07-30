@@ -21,7 +21,7 @@ MYPID=$$
 echo STARTING >  /tmp/backrest_prune_status_$DOMAIN_$REPOID_$MYPID
 
 [[ -z "${REPOID}" ]] && echo "you did not set REPOID"
-[[ -z "${PLAN}" ]] && exit 1
+[[ -z "${REPOID}" ]] && exit 1
 [[ -z "${DOMAIN}" ]] && echo "you did not set DOMAIN"
 [[ -z "${DOMAIN}" ]] && exit 1
 [[ -z "${AUTH}" ]] && echo "you did not set AUTH"
